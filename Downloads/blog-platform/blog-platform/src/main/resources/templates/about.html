@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('About')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+<main class="container">
+    <h1>About Blog Platform</h1>
+    <div class="card">
+        <p>Blog Platform is a Spring Boot web application built for the SoftUni Spring Fundamentals Regular Exam.</p>
+        <p>Readers can browse posts and leave comments. Authors publish and manage their articles. Administrators maintain categories and moderate content.</p>
+        <p>This page is static and provides general information about the project.</p>
+    </div>
+</main>
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>
