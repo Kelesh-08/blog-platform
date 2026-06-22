@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Posts')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+<main class="container">
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+    <h1>All Posts</h1>
+
+    <form class="filter-bar" method="get" th:action="@{/posts}">
+        <label for="categoryId">Filter by category</label>
+        <select id="categoryId" name="categoryId" onchange="this.form.submit()">
+            <option value="">All categories</option>
+            <option th:each="category : ${categories}"
+                    th:value="${category.id}"
+                    th:text="${category.name}"
+                    th:selected="${selectedCategoryId != null and selectedCategoryId == category.id}"></option>
+        </select>
+    </form>
+
+    <div th:if="${#lists.isEmpty(posts)}" class="card">
+        <p>No posts found for this filter.</p>
+    </div>
+
+    <article class="card" th:each="post : ${posts}">
+        <h2><a th:href="@{/posts/{id}(id=${post.id})}" th:text="${post.title}">Title</a></h2>
+        <p class="meta">
+            By <span th:text="${post.author.username}">author</span> |
+            <span th:text="${post.category.name}">category</span>
+        </p>
+        <p th:text="${#strings.abbreviate(post.content, 220)}">Preview</p>
+    </article>
+</main>
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

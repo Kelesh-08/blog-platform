@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head(${post.title})}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+<main class="container">
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+
+    <article class="card">
+        <h1 th:text="${post.title}">Post title</h1>
+        <p class="meta">
+            By <span th:text="${post.author.username}">author</span> |
+            <span th:text="${post.category.name}">category</span> |
+            <span th:text="${#temporals.format(post.createdAt, 'dd MMM yyyy HH:mm')}">date</span>
+        </p>
+        <p th:text="${post.content}">Content</p>
+
+        <div class="actions" sec:authorize="isAuthenticated()">
+            <a sec:authorize="hasRole('ADMIN')"
+               class="btn" th:href="@{/posts/{id}/edit(id=${post.id})}">Edit</a>
+            <a sec:authorize="!hasRole('ADMIN')"
+               th:if="${post.author.username == #authentication.name}"
+               class="btn" th:href="@{/posts/{id}/edit(id=${post.id})}">Edit</a>
+            <form sec:authorize="hasRole('ADMIN')"
+                  class="inline-form" th:action="@{/posts/{id}/delete(id=${post.id})}" method="post">
+                <button class="btn btn-danger" type="submit">Delete</button>
+            </form>
+            <form sec:authorize="!hasRole('ADMIN')"
+                  th:if="${post.author.username == #authentication.name}"
+                  class="inline-form" th:action="@{/posts/{id}/delete(id=${post.id})}" method="post">
+                <button class="btn btn-danger" type="submit">Delete</button>
+            </form>
+        </div>
+    </article>
+
+    <section class="card">
+        <h2>Comments</h2>
+        <div th:if="${#lists.isEmpty(comments)}">
+            <p class="meta">No comments yet.</p>
+        </div>
+        <div class="comment-item" th:each="comment : ${comments}">
+            <p th:text="${comment.content}">Comment</p>
+            <p class="meta">
+                <span th:text="${comment.author.username}">user</span> |
+                <span th:text="${#temporals.format(comment.createdAt, 'dd MMM yyyy HH:mm')}">date</span>
+            </p>
+            <form sec:authorize="hasRole('ADMIN')"
+                  class="inline-form"
+                  th:action="@{/comments/{id}/delete(id=${comment.id})}"
+                  method="post">
+                <button class="btn btn-danger" type="submit">Delete comment</button>
+            </form>
+            <form sec:authorize="isAuthenticated() and !hasRole('ADMIN')"
+                  th:if="${comment.author.username == #authentication.name}"
+                  class="inline-form"
+                  th:action="@{/comments/{id}/delete(id=${comment.id})}"
+                  method="post">
+                <button class="btn btn-danger" type="submit">Delete comment</button>
+            </form>
+        </div>
+
+        <div sec:authorize="isAuthenticated()" style="margin-top: 1.5rem;">
+            <h3>Add a comment</h3>
+            <form th:action="@{/comments/posts/{postId}(postId=${post.id})}" th:object="${commentForm}" method="post">
+                <div class="form-group">
+                    <label for="content">Your comment</label>
+                    <textarea id="content" th:field="*{content}"></textarea>
+                    <p class="field-error" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></p>
+                </div>
+                <button class="btn" type="submit">Post comment</button>
+            </form>
+        </div>
+        <p sec:authorize="isAnonymous()" class="meta">Please <a th:href="@{/login}">log in</a> to comment.</p>
+    </section>
+</main>
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

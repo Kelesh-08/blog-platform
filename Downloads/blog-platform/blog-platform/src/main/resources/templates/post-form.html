@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${pageTitle})}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+<main class="container">
+    <h1 th:text="${pageTitle}">Post form</h1>
+
+    <form class="card" th:action="${formAction}" th:object="${postForm}" method="post">
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input id="title" type="text" th:field="*{title}">
+            <p class="field-error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></p>
+        </div>
+
+        <div class="form-group">
+            <label for="categoryId">Category</label>
+            <select id="categoryId" th:field="*{categoryId}">
+                <option value="">Select category</option>
+                <option th:each="category : ${categories}"
+                        th:value="${category.id}"
+                        th:text="${category.name}"></option>
+            </select>
+            <p class="field-error" th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}"></p>
+        </div>
+
+        <div class="form-group">
+            <label for="content">Content</label>
+            <textarea id="content" th:field="*{content}"></textarea>
+            <p class="field-error" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></p>
+        </div>
+
+        <div class="actions">
+            <button class="btn" type="submit">Save</button>
+            <a class="btn btn-secondary" th:href="@{/posts}">Cancel</a>
+        </div>
+    </form>
+</main>
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>
